@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Theatre.Common", "Theatre.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Theatre.Common.Tests", "Theatre.Common.Tests\Theatre.Common.Tests.csproj", "{AC6A8C37-F8A3-4118-9F65-D169395D28EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Theatre.ConsoleClient", "Theatre.ConsoleClient\Theatre.ConsoleClient.csproj", "{26B426FA-758E-42FE-B592-F8A6A4F62FCC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{AC6A8C37-F8A3-4118-9F65-D169395D28EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC6A8C37-F8A3-4118-9F65-D169395D28EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC6A8C37-F8A3-4118-9F65-D169395D28EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26B426FA-758E-42FE-B592-F8A6A4F62FCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26B426FA-758E-42FE-B592-F8A6A4F62FCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26B426FA-758E-42FE-B592-F8A6A4F62FCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26B426FA-758E-42FE-B592-F8A6A4F62FCC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

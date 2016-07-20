@@ -1,6 +1,10 @@
-﻿namespace Theatre.Common.Tests.Agents
+﻿using Akka.TestKit.VsTest;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Theatre.Common.Tests.Agents
 {
-    public class DatabaserTests
+    [TestClass]
+    public class DatabaserTests : TestKit
     {
     }
 }

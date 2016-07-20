@@ -1,6 +1,8 @@
-﻿namespace Theatre.Common.Tests.Agents
+﻿using Akka.TestKit.VsTest;
+
+namespace Theatre.Common.Tests.Agents
 {
-    public class DirectoryReaderTests
+    public class DirectoryReaderTests : TestKit
     {
     }
 }

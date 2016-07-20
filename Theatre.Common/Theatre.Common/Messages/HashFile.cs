@@ -2,6 +2,11 @@
 {
     public class HashFile
     {
-        public string FullPath { get; set; }
+        public HashFile(string fullPath)
+        {
+            this.FullPath = fullPath;
+        }
+
+        public string FullPath { get; private set; }
     }
 }
