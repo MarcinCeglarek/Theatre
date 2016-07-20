@@ -4,7 +4,7 @@ namespace Theatre.Common.Messages
 {
     public class FileHashed
     {
-        public FileHashed(string hash, DateTime createdDate, DateTime modifiedDate, string path, string filename)
+        public FileHashed(byte[] hash, DateTime createdDate, DateTime modifiedDate, string path)
         {
             Hash = hash;
             CreatedDate = createdDate;
@@ -12,7 +12,7 @@ namespace Theatre.Common.Messages
             Path = path;
         }
 
-        public string Hash { get; private set; }
+        public byte[] Hash { get; private set; }
         public string Path { get; private set; }
         public DateTime ModifiedDate { get; private set; }
         public DateTime CreatedDate { get; private set; }

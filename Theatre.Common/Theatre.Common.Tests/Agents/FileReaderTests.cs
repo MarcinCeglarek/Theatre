@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Akka.TestKit.TestActors;
 using Akka.TestKit.VsTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Theatre.Common.Agents;
@@ -12,9 +13,8 @@ namespace Theatre.Common.Tests.Agents
         [TestMethod]
         public void ThrowsExceptionWhenFileNotFound()
         {
-            var target = ActorOfAsTestActorRef<FileReader>();
-            target.Tell(new HashFile("non/existent/path"));
-            EventFilter.Exception<FileNotFoundException>();
+            var target = ActorOfAsTestActorRef<FileReader>(BlackHoleActor.Props);
+            EventFilter.Exception<FileNotFoundException>().ExpectOne(() => target.Tell(new HashFile("non/existent/path")));
         }
     }
 }
