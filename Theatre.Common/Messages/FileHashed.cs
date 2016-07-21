@@ -10,13 +10,13 @@ namespace Theatre.Common.Messages
             Size = size;
             Hash = hash;
             CreatedDate = createdDate;
-            ModifiedDate = modifiedDate;
+            LastWriteDate = modifiedDate;
         }
 
         public byte[] Hash { get; private set; }
         public string Path { get; private set; }
         public long Size { get; private set; }
-        public DateTime ModifiedDate { get; private set; }
+        public DateTime LastWriteDate { get; private set; }
         public DateTime CreatedDate { get; private set; }
     }
 }

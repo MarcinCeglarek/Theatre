@@ -25,9 +25,6 @@ namespace Theatre.Common.Agents
             {
                 this._logger.Info("Reading " + fullPath);
 
-                ProcessChildrenDirectories();
-                ProcessChildrenFiles();
-
                 _databaser.Tell(new DirectoryHashed(fullPath));
             }
             else
