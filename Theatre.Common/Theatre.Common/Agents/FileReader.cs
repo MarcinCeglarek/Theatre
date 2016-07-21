@@ -14,7 +14,6 @@ namespace Theatre.Common.Agents
 
         public FileReader(IActorRef databaser)
         {
-            
             this._logging = Context.GetLogger();
             this._databaser = databaser;
             ReceiveAsync<HashFile>(message => ProcessFile(message.FullPath));
@@ -26,13 +25,13 @@ namespace Theatre.Common.Agents
             if (File.Exists(fullPath))
             {
                 var fileInfo = new FileInfo(fullPath);
-                _logging.Debug("{0} {1}", "Reading", fullPath);
+                _logging.Info("Reading {0}", fullPath);
                 var byteArray = await ReadAllFileAsync(fullPath);
 
                 using (var md5Hash = MD5.Create())
                 {
                     var hash = md5Hash.ComputeHash(byteArray);
-                    _logging.Debug("{0} {1}", "Finishing", fullPath);
+                    _logging.Info("Finishing {0}", fullPath);
                     _databaser.Tell(new FileHashed(fullPath,  fileInfo.Length, hash, fileInfo.CreationTimeUtc, fileInfo.LastWriteTimeUtc));
                 }
             }

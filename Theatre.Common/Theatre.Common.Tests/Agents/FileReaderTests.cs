@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Akka.Actor;
-using Akka.TestKit.TestActors;
+using Akka.TestKit;
 using Akka.TestKit.VsTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Theatre.Common.Agents;
@@ -13,33 +13,51 @@ namespace Theatre.Common.Tests.Agents
     {
         private const string NonExistentPath = "not/existent/path";
 
-        private const string ExistentPath = "";
+        private string _existentPath;
 
         private IActorRef _target;
 
+        private TestProbe _testProbe;
 
         [TestInitialize]
         public void BeforeTest()
         {
-            _target = ActorOf(Props.Create(() => new FileReader(ActorOf(BlackHoleActor.Props))));
+            _existentPath = Directory.GetCurrentDirectory() + "\\Theatre.Common.Tests.dll";
+            _testProbe = CreateTestProbe();
+            _target = ActorOf(Props.Create(() => new FileReader(_testProbe)));
         }
 
         [TestMethod]
         public void LogsInfoWhenReceivedFile()
         {
-            EventFilter.Info($"Processing {NonExistentPath}").ExpectOne(() => _target.Tell(new HashFile(NonExistentPath)));
+            EventFilter.Info($"Processing {NonExistentPath}")
+                .ExpectOne(() => _target.Tell(new HashFile(NonExistentPath)));
         }
 
         [TestMethod]
         public void LogsWarningWhenFileNotFound()
         {
-            EventFilter.Warning($"{NonExistentPath}: File not found").ExpectOne(() => _target.Tell(new HashFile(NonExistentPath)));
+            EventFilter.Warning($"{NonExistentPath}: File not found")
+                .ExpectOne(() => _target.Tell(new HashFile(NonExistentPath)));
         }
 
         [TestMethod]
-        public void LogsDebugWhenStartingToReadFile()
+        public void LogsInfoWhenStartingToReadFile()
         {
-            EventFilter.Debug($"Reading {ExistentPath}").ExpectOne(() => _target.Tell(new HashFile(ExistentPath)));
+            EventFilter.Info($"Reading {_existentPath}").ExpectOne(() => _target.Tell(new HashFile(_existentPath)));
+        }
+
+        [TestMethod]
+        public void LogsInfoWhenFinishedHashingFile()
+        {
+            EventFilter.Info($"Finishing {_existentPath}").ExpectOne(() => _target.Tell(new HashFile(_existentPath)));
+        }
+
+        [TestMethod]
+        public void SendsMessageWithValidFileNameWhenFinishedHashingFile()
+        {
+            _target.Tell(new HashFile(_existentPath));
+            _testProbe.ExpectMsg<FileHashed>(message => message.Path == _existentPath);
         }
     }
 }
