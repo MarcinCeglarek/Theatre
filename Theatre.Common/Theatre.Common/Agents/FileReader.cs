@@ -2,37 +2,54 @@
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Event;
 using Theatre.Common.Messages;
 
 namespace Theatre.Common.Agents
 {
     public class FileReader : ReceiveActor
     {
-        private IActorRef _databaser;
+        private readonly IActorRef _databaser;
+        private readonly ILoggingAdapter _logging;
 
         public FileReader(IActorRef databaser)
         {
+            
+            this._logging = Context.GetLogger();
             this._databaser = databaser;
             ReceiveAsync<HashFile>(message => ProcessFile(message.FullPath));
         }
 
         private async Task ProcessFile(string fullPath)
         {
+            _logging.Info("Processing {0}", fullPath);
             if (File.Exists(fullPath))
             {
-                var byteArray = File.ReadAllBytes(fullPath);
+                var fileInfo = new FileInfo(fullPath);
+                _logging.Debug("{0} {1}", "Reading", fullPath);
+                var byteArray = await ReadAllFileAsync(fullPath);
 
                 using (var md5Hash = MD5.Create())
                 {
                     var hash = md5Hash.ComputeHash(byteArray);
-                    _databaser.Tell(new FileHashed(hash, File.GetCreationTimeUtc(fullPath), File.GetLastWriteTimeUtc(fullPath), fullPath));
+                    _logging.Debug("{0} {1}", "Finishing", fullPath);
+                    _databaser.Tell(new FileHashed(fullPath,  fileInfo.Length, hash, fileInfo.CreationTimeUtc, fileInfo.LastWriteTimeUtc));
                 }
             }
             else
             {
-                throw new FileNotFoundException();
+                _logging.Warning("{0}: File not found", fullPath);
             }
         }
 
+        static async Task<byte[]> ReadAllFileAsync(string filename)
+        {
+            using (var file = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
+            {
+                var buff = new byte[file.Length];
+                await file.ReadAsync(buff, 0, (int)file.Length);
+                return buff;
+            }
+        }
     }
 }
