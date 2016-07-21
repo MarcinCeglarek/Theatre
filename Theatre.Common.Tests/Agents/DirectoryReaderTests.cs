@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.IO.Abstractions;
 using Akka.Actor;
 using Akka.TestKit;
@@ -17,33 +16,37 @@ namespace Theatre.Common.Tests.Agents
         private const string NonExistingDirPath = "Non/Existent/Path";
         private const string ExistingDirPath = "Existing/Dir";
 
-        private IActorRef _target;
-        private TestProbe _databaser;
-        private TestProbe _directoriesRouter;
-        private TestProbe _filesRouter;
-
-        private List<string> _directories = new List<string>()
+        private readonly IReadOnlyCollection<string> _directories = new List<string>
         {
             ExistingDirPath + "/d1",
             ExistingDirPath + "/d2"
         };
 
-        private List<string> _files = new List<string>()
+        private readonly IReadOnlyCollection<string> _files = new List<string>
         {
             ExistingDirPath + "/f1.abc",
             ExistingDirPath + "/f2.def",
             ExistingDirPath + "/f3.ghj"
         };
 
+        private TestProbe _databaser;
+        private TestProbe _directoriesRouter;
+        private TestProbe _filesRouter;
+
+        private IActorRef _target;
+
 
         [TestInitialize]
         public void BeforeTest()
         {
-            _databaser = this.CreateTestProbe();
-            _directoriesRouter = this.CreateTestProbe();
-            _filesRouter = this.CreateTestProbe();
+            _databaser = CreateTestProbe();
+            _directoriesRouter = CreateTestProbe();
+            _filesRouter = CreateTestProbe();
             var filesystem = CreateMockFileSystem();
-            _target = ActorOf(Props.Create(() => new DirectoryReader(_directoriesRouter, _filesRouter, _databaser, filesystem.Object)));
+            _target =
+                ActorOf(
+                    Props.Create(
+                        () => new DirectoryReader(_directoriesRouter, _filesRouter, _databaser, filesystem.Object)));
         }
 
         private Mock<IFileSystem> CreateMockFileSystem()
@@ -51,12 +54,8 @@ namespace Theatre.Common.Tests.Agents
             var fileSystem = new Mock<IFileSystem>();
             fileSystem.Setup(f => f.Directory.Exists(ExistingDirPath)).Returns(true);
             fileSystem.Setup(f => f.Directory.Exists(NonExistingDirPath)).Returns(false);
-
-            fileSystem.Setup(f => f.Directory.EnumerateDirectories(ExistingDirPath)).Returns(new List<string>()
-            );
-
-            fileSystem.Setup(f => f.Directory.EnumerateFiles(ExistingDirPath)).Returns(new List<string>()
-           );
+            fileSystem.Setup(f => f.Directory.EnumerateDirectories(ExistingDirPath)).Returns(_directories);
+            fileSystem.Setup(f => f.Directory.EnumerateFiles(ExistingDirPath)).Returns(_files);
 
             return fileSystem;
         }
@@ -78,7 +77,8 @@ namespace Theatre.Common.Tests.Agents
         [TestMethod]
         public void LogsInfoWhenStartingProcessingDirectory()
         {
-            EventFilter.Info("Reading " + ExistingDirPath).ExpectOne(() => _target.Tell(new HashDirectory(ExistingDirPath)));
+            EventFilter.Info("Reading " + ExistingDirPath)
+                .ExpectOne(() => _target.Tell(new HashDirectory(ExistingDirPath)));
         }
 
         [TestMethod]
@@ -94,7 +94,7 @@ namespace Theatre.Common.Tests.Agents
             _target.Tell(new HashDirectory(ExistingDirPath));
             for (var i = 0; i < _directories.Count; i++)
             {
-                _filesRouter.ExpectMsg<HashFile>();
+                _directoriesRouter.ExpectMsg<HashDirectory>();
             }
         }
 
@@ -102,11 +102,12 @@ namespace Theatre.Common.Tests.Agents
         public void SendsMessageWithCorrectPathsForEachFoundDirectory()
         {
             _target.Tell(new HashDirectory(ExistingDirPath));
-            var m1 = _directoriesRouter.ExpectMsg<HashDirectory>();
-            Assert.IsTrue(m1.FullPath == ExistingDirPath + "/1" || m1.FullPath == ExistingDirPath + "/2");
-            var m2 = _directoriesRouter.ExpectMsg<HashDirectory>();
-            Assert.IsTrue(m2.FullPath == ExistingDirPath + "/1" || m2.FullPath == ExistingDirPath + "/2");
-            Assert.AreNotEqual(m1.FullPath, m2.FullPath);
+            var directories = new List<string>(_directories);
+            for (var i = 0; i < _directories.Count; i++)
+            {
+                directories.Remove(_directoriesRouter.ExpectMsg<HashDirectory>().FullPath);
+            }
+            Assert.AreEqual(0, directories.Count);
         }
 
         [TestMethod]
@@ -123,10 +124,12 @@ namespace Theatre.Common.Tests.Agents
         public void SendsMessageWithCorrectPathsForEachFoundFile()
         {
             _target.Tell(new HashDirectory(ExistingDirPath));
-            var m1 = _filesRouter.ExpectMsg<HashFile>();
-
-            var m2 = _filesRouter.ExpectMsg<HashFile>();
-            var m3 = _filesRouter.ExpectMsg<HashFile>();
+            var files = new List<string>(_files);
+            for (var i = 0; i < _files.Count; i++)
+            {
+                files.Remove(_filesRouter.ExpectMsg<HashFile>().FullPath);
+            }
+            Assert.AreEqual(0, files.Count);
         }
     }
 }
