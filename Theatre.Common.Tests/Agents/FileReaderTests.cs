@@ -35,11 +35,11 @@ namespace Theatre.Common.Tests.Agents
         {
             _testProbe = CreateTestProbe();
 
-            var fileSystemMock = CreateFileSystemMock();
+            var fileSystemMock = CreateMockFileSystem();
             _target = ActorOf(Props.Create(() => new FileReader(_testProbe, fileSystemMock.Object)));
         }
 
-        private Mock<IFileSystem> CreateFileSystemMock()
+        private Mock<IFileSystem> CreateMockFileSystem()
         {
             var fileSystemMock = new Mock<IFileSystem>();
             fileSystemMock.Setup(f => f.File.Exists(ExistingFilePath)).Returns(true);
@@ -52,6 +52,7 @@ namespace Theatre.Common.Tests.Agents
             fileSystemMock.Setup(f => f.File.GetLastWriteTimeUtc(ExistingFilePath)).Returns(_writeDate);
             fileSystemMock.Setup(f => f.File.GetLastWriteTimeUtc(NotExistingFilePath))
                 .Throws(new FileNotFoundException());
+
             return fileSystemMock;
         }
 
