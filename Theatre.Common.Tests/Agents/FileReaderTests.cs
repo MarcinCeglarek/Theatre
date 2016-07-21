@@ -1,8 +1,10 @@
 ﻿using System.IO;
+using SystemWrapper.IO;
 using Akka.Actor;
 using Akka.TestKit;
 using Akka.TestKit.VsTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Theatre.Common.Agents;
 using Theatre.Common.Messages;
 
@@ -59,5 +61,6 @@ namespace Theatre.Common.Tests.Agents
             _target.Tell(new HashFile(_existentPath));
             _testProbe.ExpectMsg<FileHashed>(message => message.Path == _existentPath);
         }
+
     }
 }
