@@ -25,7 +25,7 @@ namespace Theatre.Common.Agents
             _logging.Info("Processing {0}", fullPath);
             if (_fileSystem.File.Exists(fullPath))
             {
-                _logging.Info("Reading {0}", fullPath);
+                _logging.Debug("Reading {0}", fullPath);
                 var byteArray = _fileSystem.File.ReadAllBytes(fullPath);
 
                 var fileSize = byteArray.Length;

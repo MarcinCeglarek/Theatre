@@ -1,6 +1,5 @@
 ﻿using System;
 using Akka.Actor;
-using Akka.TestKit;
 using Akka.TestKit.VsTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Theatre.Common.Agents;
@@ -13,6 +12,11 @@ namespace Theatre.Common.Tests.Agents
     {
         private IActorRef _target;
 
+        public DatabaserTests()
+            : base(@"akka.loglevel = DEBUG")
+        {
+        }
+
         [TestMethod]
         public void LogsFileHashedMessage()
         {
@@ -20,7 +24,6 @@ namespace Theatre.Common.Tests.Agents
             EventFilter.Info("Path hashed")
                 .ExpectOne(
                     () => _target.Tell(new FileHashed("Path", 10, new byte[] {0, 1, 2, 3}, DateTime.Now, DateTime.Now)));
-
         }
     }
 }

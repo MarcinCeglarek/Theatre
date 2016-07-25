@@ -30,6 +30,11 @@ namespace Theatre.Common.Tests.Agents
 
         private TestProbe _testProbe;
 
+        public FileReaderTests()
+            : base(@"akka.loglevel = DEBUG")
+        {
+        }
+
         [TestInitialize]
         public void BeforeTest()
         {
@@ -47,11 +52,7 @@ namespace Theatre.Common.Tests.Agents
             fileSystemMock.Setup(f => f.File.ReadAllBytes(NotExistingFilePath)).Throws(new FileNotFoundException());
             fileSystemMock.Setup(f => f.File.ReadAllBytes(ExistingFilePath)).Returns(_existingFileContent);
             fileSystemMock.Setup(f => f.File.GetCreationTimeUtc(ExistingFilePath)).Returns(_createdDate);
-            fileSystemMock.Setup(f => f.File.GetCreationTimeUtc(NotExistingFilePath))
-                .Throws(new FileNotFoundException());
             fileSystemMock.Setup(f => f.File.GetLastWriteTimeUtc(ExistingFilePath)).Returns(_writeDate);
-            fileSystemMock.Setup(f => f.File.GetLastWriteTimeUtc(NotExistingFilePath))
-                .Throws(new FileNotFoundException());
 
             return fileSystemMock;
         }
@@ -73,7 +74,7 @@ namespace Theatre.Common.Tests.Agents
         [TestMethod]
         public void LogsInfoWhenStartingToReadFile()
         {
-            EventFilter.Info($"Reading {ExistingFilePath}")
+            EventFilter.Debug($"Reading {ExistingFilePath}")
                 .ExpectOne(() => _target.Tell(new HashFile(ExistingFilePath)));
         }
 

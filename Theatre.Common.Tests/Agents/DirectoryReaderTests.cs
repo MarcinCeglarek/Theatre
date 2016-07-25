@@ -35,6 +35,10 @@ namespace Theatre.Common.Tests.Agents
 
         private IActorRef _target;
 
+        public DirectoryReaderTests()
+            : base(@"akka.loglevel = DEBUG")
+        {
+        }
 
         [TestInitialize]
         public void BeforeTest()
