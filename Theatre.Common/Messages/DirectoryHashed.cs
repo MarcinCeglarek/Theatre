@@ -2,12 +2,12 @@
 {
     public class DirectoryHashed : HashDirectory
     {
-        public DirectoryHashed(string fullPath, long directorySize)
+        public DirectoryHashed(string fullPath, long size)
             : base(fullPath)
         {
-            this.DirectorySize = directorySize;
+            this.Size = size;
         }
 
-        public long DirectorySize { get; }
+        public long Size { get; }
     }
 }

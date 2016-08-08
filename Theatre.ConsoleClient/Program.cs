@@ -26,6 +26,7 @@ namespace Theatre.ConsoleClient
 
             builder.RegisterType<FileSystem>().As<IFileSystem>();
             builder.RegisterType<DirectoryReader>().As<DirectoryReader>();
+            builder.RegisterType<FileReader>().As<FileReader>();
 
             var container = builder.Build();
 
@@ -36,7 +37,7 @@ namespace Theatre.ConsoleClient
                     actorSystem.ActorOf(
                         actorSystem.DI().Props<DirectoryReader>(), 
                         "RootDirectoryReader");
-                reader.Tell(new HashDirectory("C:\\Drivers"));
+                reader.Tell(new HashDirectory("C:\\Temp"));
 
                 actorSystem.AwaitTermination();
             }

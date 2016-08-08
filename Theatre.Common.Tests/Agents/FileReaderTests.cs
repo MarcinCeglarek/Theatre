@@ -50,7 +50,7 @@ namespace Theatre.Common.Tests.Agents
             this.testProbe = this.CreateTestProbe();
 
             var fileSystemMock = this.CreateMockFileSystem();
-            this.target = this.ActorOf(Props.Create(() => new FileReader(this.testProbe, fileSystemMock.Object)));
+            this.target = this.ActorOf(Props.Create(() => new FileReader(fileSystemMock.Object)));
         }
 
         [TestMethod]

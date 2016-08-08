@@ -1,4 +1,6 @@
-﻿namespace Theatre.Common.Agents.Models
+﻿using Theatre.Common.Messages;
+
+namespace Theatre.Common.Agents.Models
 {
     #region Usings
 
@@ -12,6 +14,8 @@
 
         public string FullPath { get; set; }
 
-        public long Size { get; set; }
+        public long? Size => this.Message?.Size;
+
+        public FileHashed Message {get;set;}
     }
 }

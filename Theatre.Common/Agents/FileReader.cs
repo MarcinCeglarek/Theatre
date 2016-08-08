@@ -14,16 +14,13 @@
 
     public class FileReader : ReceiveActor
     {
-        private readonly IActorRef databaser;
-
         private readonly IFileSystem fileSystem;
 
         private readonly ILoggingAdapter logging;
 
-        public FileReader(IActorRef databaser, IFileSystem fileSystem)
+        public FileReader(IFileSystem fileSystem)
         {
             this.logging = Context.GetLogger();
-            this.databaser = databaser;
             this.fileSystem = fileSystem;
             this.Receive<HashFile>(message => this.ProcessFile(message.FullPath));
         }
@@ -42,7 +39,7 @@
                 {
                     var hash = md5Hash.ComputeHash(byteArray);
                     this.logging.Info("Finishing {0}", fullPath);
-                    this.databaser.Tell(
+                    Context.Parent.Tell(
                         new FileHashed(
                             fullPath, 
                             fileSize, 
