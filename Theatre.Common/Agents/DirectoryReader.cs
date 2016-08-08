@@ -42,7 +42,7 @@ namespace Theatre.Common.Agents
                 foreach (var directoryPath in directories)
                 {
                     var props = Context.DI().Props<DirectoryReader>();
-                    var directoryAgent = Context.ActorOf(props, "NameOfDirectoryReader");
+                    var directoryAgent = Context.ActorOf(props);
                     directoryAgent.Tell(new HashDirectory(directoryPath));
 
                     var dirInfo = new DirectoryAgentInfo

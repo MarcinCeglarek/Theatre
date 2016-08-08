@@ -25,7 +25,8 @@ namespace Theatre.ConsoleClient
             var actorSystem = ActorSystem.Create("Theatre");
 
             builder.RegisterType<FileSystem>().As<IFileSystem>();
-            
+            builder.RegisterType<DirectoryReader>().As<DirectoryReader>();
+
             var container = builder.Build();
 
             using (var scope = container.BeginLifetimeScope())
@@ -35,7 +36,7 @@ namespace Theatre.ConsoleClient
                     actorSystem.ActorOf(
                         actorSystem.DI().Props<DirectoryReader>(), 
                         "RootDirectoryReader");
-                reader.Tell(new HashDirectory("C:\\Users\\mceglarek03"));
+                reader.Tell(new HashDirectory("C:\\Drivers"));
 
                 actorSystem.AwaitTermination();
             }
