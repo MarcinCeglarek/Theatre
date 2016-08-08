@@ -1,32 +1,47 @@
-﻿using System.IO.Abstractions;
-using Akka.Actor;
-using Autofac;
-using Theatre.Common.Agents;
-using Theatre.Common.Messages;
+﻿using System;
+using Akka.DI.AutoFac;
+using Akka.DI.Core;
 
 namespace Theatre.ConsoleClient
 {
+    #region Usings
+
+    using System.IO.Abstractions;
+
+    using Akka.Actor;
+
+    using Autofac;
+
+    using Theatre.Common.Agents;
+    using Theatre.Common.Messages;
+
+    #endregion
+
     internal class Program
     {
-        private static IContainer Container { get; set; }
-
         private static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
+            var actorSystem = ActorSystem.Create("Theatre");
+
             builder.RegisterType<FileSystem>().As<IFileSystem>();
+            
+            var container = builder.Build();
 
-            Container = builder.Build();
-
-            using (var scope = Container.BeginLifetimeScope())
+            using (var scope = container.BeginLifetimeScope())
             {
-                var actorSystem = ActorSystem.Create("Theatre");
+                var propsResolver = new AutoFacDependencyResolver(container, actorSystem);
+                var reader =
+                    actorSystem.ActorOf(
+                        actorSystem.DI().Props<DirectoryReader>(), 
+                        "RootDirectoryReader");
+                reader.Tell(new HashDirectory("C:\\Users\\mceglarek03"));
 
-                var databaser = actorSystem.ActorOf(Props.Create(() => new Databaser()), "Databaser");
-                var reader = actorSystem.ActorOf(Props.Create(() => new FileReader(databaser, scope.Resolve<IFileSystem>())), "Reader");
-
-                reader.Tell(new HashFile("c:\\DBAR_Ver.txt"));
                 actorSystem.AwaitTermination();
             }
+
+            Console.WriteLine("Done");
+            Console.ReadLine();
         }
     }
 }

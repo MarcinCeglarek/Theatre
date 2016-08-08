@@ -1,55 +1,77 @@
-﻿using System.IO;
+﻿#region Usings
+
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.DI.Core;
 using Akka.Event;
+using Theatre.Common.Agents.Models;
 using Theatre.Common.Messages;
+
+#endregion
 
 namespace Theatre.Common.Agents
 {
     public class DirectoryReader : ReceiveActor
     {
-        private readonly IActorRef _directoriesRouter;
-        private readonly IActorRef _filesRouter;
-        private readonly IActorRef _databaser;
-        private readonly IFileSystem _fileSystem;
-        private readonly ILoggingAdapter _logger;
-
-        public DirectoryReader(IActorRef directoriesRouter, IActorRef filesRouter, IActorRef databaser, IFileSystem fileSystem)
+        public DirectoryReader(IFileSystem fileSystem)
         {
-            _directoriesRouter = directoriesRouter;
-            _filesRouter = filesRouter;
-            _databaser = databaser;
-            _fileSystem = fileSystem;
-            _logger = Context.GetLogger();
+            FileSystem = fileSystem;
+            Logger = Context.GetLogger();
             ReceiveAsync<HashDirectory>(message => ProcessDirectory(message.FullPath));
+
+            Directories = new List<DirectoryAgentInfo>();
+            Files = new List<FileAgentInfo>();
         }
+
+        private IFileSystem FileSystem { get; }
+        private ILoggingAdapter Logger { get; }
+        private IList<DirectoryAgentInfo> Directories { get; }
+        private IList<FileAgentInfo> Files { get; }
 
         private Task ProcessDirectory(string fullPath)
         {
-            this._logger.Info("Processing " + fullPath);
-            if (_fileSystem.Directory.Exists(fullPath))
+            Logger.Info("Processing " + fullPath);
+            if (FileSystem.Directory.Exists(fullPath))
             {
-                this._logger.Info("Reading " + fullPath);
-                var directories = this._fileSystem.Directory.EnumerateDirectories(fullPath);
+                Logger.Debug("Reading " + fullPath);
+                var directories = FileSystem.Directory.EnumerateDirectories(fullPath);
 
-                foreach (var directory in directories)
+                foreach (var directoryPath in directories)
                 {
-                    _directoriesRouter.Tell(new HashDirectory(directory));
+                    var props = Context.DI().Props<DirectoryReader>();
+                    var directoryAgent = Context.ActorOf(props, "NameOfDirectoryReader");
+                    directoryAgent.Tell(new HashDirectory(directoryPath));
+
+                    var dirInfo = new DirectoryAgentInfo
+                    {
+                        Agent = directoryAgent,
+                        FullPath = Path.Combine(fullPath, directoryPath),
+                        Size = 0
+                    };
+
+                    Directories.Add(dirInfo);
                 }
 
-                foreach (var file in _fileSystem.Directory.EnumerateFiles(fullPath))
+                foreach (var file in FileSystem.Directory.EnumerateFiles(fullPath))
                 {
-                    _filesRouter.Tell(new HashFile(file));
+                    /*this.filesRouter.Tell(new HashFile(file));*/
                 }
-                
-                _databaser.Tell(new DirectoryHashed(fullPath));
             }
             else
             {
-                this._logger.Warning(fullPath + ": Dir not found");
+                Logger.Error(fullPath + ": Dir not found");
+                Self.Tell(PoisonPill.Instance);
             }
 
+            return Task.FromResult(0);
+        }
+
+        private Task ProcessDirectoryHashed(DirectoryHashed message)
+        {
+            /*this.databaser.Tell(new DirectoryHashed(fullPath));*/
             return Task.FromResult(0);
         }
     }

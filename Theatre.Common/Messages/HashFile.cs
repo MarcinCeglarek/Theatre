@@ -7,6 +7,6 @@
             this.FullPath = fullPath;
         }
 
-        public string FullPath { get; private set; }
+        public string FullPath { get; }
     }
 }

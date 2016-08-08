@@ -1,22 +1,30 @@
-﻿using System;
-
-namespace Theatre.Common.Messages
+﻿namespace Theatre.Common.Messages
 {
+    #region Usings
+
+    using System;
+
+    #endregion
+
     public class FileHashed
     {
         public FileHashed(string path, long size, byte[] hash, DateTime createdDate, DateTime modifiedDate)
         {
-            Path = path;
-            Size = size;
-            Hash = hash;
-            CreatedDate = createdDate;
-            LastWriteDate = modifiedDate;
+            this.Path = path;
+            this.Size = size;
+            this.Hash = hash;
+            this.CreatedDate = createdDate;
+            this.LastWriteDate = modifiedDate;
         }
 
-        public byte[] Hash { get; private set; }
-        public string Path { get; private set; }
-        public long Size { get; private set; }
-        public DateTime LastWriteDate { get; private set; }
-        public DateTime CreatedDate { get; private set; }
+        public DateTime CreatedDate { get; }
+
+        public byte[] Hash { get; }
+
+        public DateTime LastWriteDate { get; }
+
+        public string Path { get; }
+
+        public long Size { get; }
     }
 }

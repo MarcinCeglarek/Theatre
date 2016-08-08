@@ -97,8 +97,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Agents\Databaser.cs" />
+    <Compile Include="Agents\Models\DirectoryAgentInfo.cs" />
     <Compile Include="Agents\DirectoryReader.cs" />
     <Compile Include="Agents\FileReader.cs" />
+    <Compile Include="Agents\Models\FileAgentInfo.cs" />
     <Compile Include="Messages\DirectoryHashed.cs" />
     <Compile Include="Messages\FileHashed.cs" />
     <Compile Include="Messages\HashDirectory.cs" />
