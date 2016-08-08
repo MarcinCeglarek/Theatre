@@ -106,6 +106,7 @@
     <Compile Include="Messages\FileHashed.cs" />
     <Compile Include="Messages\HashDirectory.cs" />
     <Compile Include="Messages\HashFile.cs" />
+    <Compile Include="Messages\Enums\HashingStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

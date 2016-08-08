@@ -6,6 +6,8 @@ namespace Theatre.Common.Agents.Models
 
     using Akka.Actor;
 
+    using Theatre.Common.Messages.Enums;
+
     #endregion
 
     public class FileAgentInfo
@@ -17,5 +19,7 @@ namespace Theatre.Common.Agents.Models
         public long? Size => this.Message?.Size;
 
         public FileHashed Message {get;set;}
+
+        public HashingStatus Status { get; set; }
     }
 }

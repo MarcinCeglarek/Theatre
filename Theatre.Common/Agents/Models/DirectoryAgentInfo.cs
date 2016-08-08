@@ -6,6 +6,8 @@ namespace Theatre.Common.Agents.Models
 
     using System.IO;
 
+    using Theatre.Common.Messages.Enums;
+
     #endregion
 
     public class DirectoryAgentInfo : FileAgentInfo
@@ -15,5 +17,7 @@ namespace Theatre.Common.Agents.Models
         public new DirectoryHashed Message { get; set; }
 
         public new long? Size => this.Message?.Size;
+
+        public HashingStatus Status { get; set; }
     }
 }

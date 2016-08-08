@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Theatre.Common.Helpers
+﻿namespace Theatre.Common.Helpers
 {
     public static class ExtensionMethods
     {
         public static string ToActorFriendlyName(this string path)
         {
-            return path.Replace('\\', '_');
+            return path.Replace('\\', '!').Replace(' ', '*').Replace('{', '(').Replace('[', '(').Replace(']', ')').Replace('}', ')');
         }
     }
 }

@@ -2,10 +2,12 @@
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     using Akka.Actor;
     using Akka.DI.Core;
@@ -14,6 +16,7 @@
     using Theatre.Common.Agents.Models;
     using Theatre.Common.Helpers;
     using Theatre.Common.Messages;
+    using Theatre.Common.Messages.Enums;
 
     #endregion
 
@@ -39,7 +42,47 @@
 
         private IList<FileAgentInfo> Files { get; }
 
-        public void ProcessingDirectory()
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(1, TimeSpan.Zero,
+                e =>
+                    {
+                        if (e is UnauthorizedAccessException)
+                        {
+                            this.Logger.Warning(e.Message);
+                            var regex = new Regex("Access to the path '([-\\w\\s:`,\\.\\\\]+)' is denied");
+                            var result = regex.Match(e.Message);
+                            var path = result.Groups[1].Value;
+                            var entry = this.Directories.SingleOrDefault(d => d.FullPath == path);
+                            if (entry != null)
+                            {
+                                entry.Message = new DirectoryHashed(path, 0);
+                                entry.Status = HashingStatus.PermissionDenied;
+                            }
+                        }
+                        else if (e is System.IO.IOException)
+                        {
+                            this.Logger.Warning(e.Message);
+                            var regex = new Regex("The process cannot access the file '([-\\w\\s:`,\\.\\\\]+)' because it is being used by another process");
+                            var result = regex.Match(e.Message);
+                            var path = result.Groups[1].Value;
+                            var entry = this.Files.SingleOrDefault(d => d.FullPath == path);
+                            if (entry != null)
+                            {
+                                entry.Message = new FileHashed(path, 0, new byte[16], null, null);
+                                entry.Status = HashingStatus.PermissionDenied;
+                            }
+                        }
+                        else
+                        {
+                            this.Logger.Error(e.ToString());
+                        }
+
+                        return Directive.Stop;
+                    });
+        }
+
+        private void ProcessingDirectory()
         {
             // Order of messages here matters - subclasses needs to be put at first, and first matching rule is served
             this.Receive<DirectoryHashed>(message => this.ProcessDirectoryHashed(message));
@@ -51,6 +94,7 @@
         {
             this.FullPath = message.FullPath;
             this.Logger.Info("Received HashDirectory message for " + this.FullPath);
+
             if (this.FileSystem.Directory.Exists(this.FullPath))
             {
                 this.Logger.Debug("Reading " + this.FullPath);
@@ -60,7 +104,7 @@
                 {
                     this.Logger.Debug("Creating agent for " + directoryPath);
                     var props = Context.DI().Props<DirectoryReader>();
-                    var agent = Context.ActorOf(props, directoryPath.ToActorFriendlyName());
+                    var agent = Context.ActorOf(props, Path.GetFileName(directoryPath).ToActorFriendlyName());
                     agent.Tell(new HashDirectory(directoryPath));
 
                     var dirInfo = new DirectoryAgentInfo
@@ -116,6 +160,7 @@
 
             this.Logger.Warning("Received DirectoryHashed message for " + message.FullPath);
             entry.Message = message;
+            entry.Status = HashingStatus.Completed;
 
             this.CheckCurrentDirectoryFinishingCondition();
         }

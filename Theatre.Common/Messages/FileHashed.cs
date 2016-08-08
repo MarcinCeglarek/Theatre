@@ -8,7 +8,7 @@
 
     public class FileHashed
     {
-        public FileHashed(string path, long size, byte[] hash, DateTime createdDate, DateTime modifiedDate)
+        public FileHashed(string path, long size, byte[] hash, DateTime? createdDate, DateTime? modifiedDate)
         {
             this.Path = path;
             this.Size = size;
@@ -17,11 +17,11 @@
             this.LastWriteDate = modifiedDate;
         }
 
-        public DateTime CreatedDate { get; }
+        public DateTime? CreatedDate { get; }
 
         public byte[] Hash { get; }
 
-        public DateTime LastWriteDate { get; }
+        public DateTime? LastWriteDate { get; }
 
         public string Path { get; }
 

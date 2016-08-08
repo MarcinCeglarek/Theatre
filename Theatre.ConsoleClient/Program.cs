@@ -37,7 +37,7 @@ namespace Theatre.ConsoleClient
                     actorSystem.ActorOf(
                         actorSystem.DI().Props<DirectoryReader>(), 
                         "RootDirectoryReader");
-                reader.Tell(new HashDirectory("C:\\Temp"));
+                reader.Tell(new HashDirectory("C:\\Users"));
 
                 actorSystem.AwaitTermination();
             }
