@@ -101,6 +101,7 @@
     <Compile Include="Agents\DirectoryReader.cs" />
     <Compile Include="Agents\FileReader.cs" />
     <Compile Include="Agents\Models\FileAgentInfo.cs" />
+    <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Messages\DirectoryHashed.cs" />
     <Compile Include="Messages\FileHashed.cs" />
     <Compile Include="Messages\HashDirectory.cs" />

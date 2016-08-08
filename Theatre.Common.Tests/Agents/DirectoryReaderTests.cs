@@ -1,111 +1,114 @@
-﻿#region Usings
-
-using System.Collections.Generic;
-using System.IO.Abstractions;
-using Akka.Actor;
-using Akka.TestKit;
-using Akka.TestKit.Xunit2;
-using Autofac;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Theatre.Common.Agents;
-using Theatre.Common.Messages;
-using Xunit;
-
-#endregion
-
-namespace Theatre.Common.Tests.Agents
+﻿namespace Theatre.Common.Tests.Agents
 {
+    #region Usings
+
+    using System.Collections.Generic;
+    using System.IO.Abstractions;
+
+    using Akka.Actor;
+    using Akka.DI.AutoFac;
+    using Akka.DI.Core;
+    using Akka.TestKit;
+    using Akka.TestKit.Xunit2;
+
+    using Autofac;
+
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    using Moq;
+
+    using Theatre.Common.Agents;
+    using Theatre.Common.Messages;
+
+    using Xunit;
+
+    #endregion
+
     [TestClass]
     public class DirectoryReaderTests : TestKit
     {
         private const string ExistingDirPath = "Existing/Dir";
+
         private const string NonExistingDirPath = "Non/Existent/Path";
 
         private readonly IReadOnlyCollection<string> directories = new List<string>
-        {
-            ExistingDirPath + "/d1",
-            ExistingDirPath + "/d2"
-        };
+                                                                       {
+                                                                           ExistingDirPath + "/d1", 
+                                                                           ExistingDirPath + "/d2"
+                                                                       };
 
         private readonly IReadOnlyCollection<string> files = new List<string>
-        {
-            ExistingDirPath + "/f1.abc",
-            ExistingDirPath + "/f2.def",
-            ExistingDirPath + "/f3.ghj"
-        };
-
-        private TestProbe databaser;
+                                                                 {
+                                                                     ExistingDirPath + "/f1.abc", 
+                                                                     ExistingDirPath + "/f2.def", 
+                                                                     ExistingDirPath + "/f3.ghj"
+                                                                 };
 
         public DirectoryReaderTests()
             : base(@"akka.loglevel = DEBUG")
         {
-            databaser = CreateTestProbe();
-
-            var builder = new ContainerBuilder();
-            builder.RegisterType<FileSystem>().As<IFileSystem>();
-
-            var container = builder.Build();
         }
 
         [Fact]
         public void StartsProcessingDirectory()
         {
-            EventFilter.Info("Processing " + NonExistingDirPath)
-                .ExpectOne(() => GetTargetAgent(NonExistingDirPath));
+            this.EventFilter.Info("Received HashDirectory message for " + NonExistingDirPath)
+                .ExpectOne(() => this.GetTargetAgent(NonExistingDirPath));
         }
 
         [Fact]
         public void LogsInfoWhenStartingProcessingDirectory()
         {
-            EventFilter.Debug("Reading " + ExistingDirPath)
-                .ExpectOne(() => GetTargetAgent(ExistingDirPath));
+            this.EventFilter.Debug("Reading " + ExistingDirPath).ExpectOne(() => this.GetTargetAgent(ExistingDirPath));
         }
 
         [Fact]
         public void AgentLogsErrorIfDirectoryDoesNotExists()
         {
-            EventFilter.Error(NonExistingDirPath + ": Dir not found")
-                .ExpectOne(() => GetTargetAgent(NonExistingDirPath));
+            this.EventFilter.Error(NonExistingDirPath + ": Dir not found")
+                .ExpectOne(() => this.GetTargetAgent(NonExistingDirPath));
         }
 
         [Fact]
         public void AgentDiesIfDirectoryDoesNotExists()
         {
-            var target = GetTargetAgent(NonExistingDirPath);
-            Watch(target);
-            ExpectTerminated(target);
+            var target = this.GetTargetAgent(NonExistingDirPath);
+            this.Watch(target);
+            this.ExpectTerminated(target);
         }
 
         [Fact]
         public void CreatesAgentForEachSubdirectory()
         {
-            EventFilter.Info()
-                .Expect(3, () => GetTargetAgent(ExistingDirPath));
+            this.EventFilter.Info(null, "Received HashDirectory message for ")
+                .Expect(3, () => this.GetTargetAgent(ExistingDirPath));
         }
 
-        private TestActorRef<DirectoryReader> GetTargetAgent(string path)
+        private IActorRef GetTargetAgent(string path)
         {
-            var filesystem = GetMockFileSystem();
-            var target = ActorOfAsTestActorRef<DirectoryReader>(
-                Props.Create(
-                    () =>
-                        new DirectoryReader(
-                            filesystem.Object
-                            )));
-            target.Tell(new HashDirectory(path));
-            return target;
+            var builder = new ContainerBuilder();
+            builder.Register(c => this.GetMockFileSystem()).As<IFileSystem>();
+
+            var container = builder.Build();
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var propsResolver = new AutoFacDependencyResolver(container, this.Sys);
+                var props = this.Sys.DI().Props<DirectoryReader>();
+                var target = this.Sys.ActorOf(props);
+                target.Tell(new HashDirectory(path));
+                return target;
+            }
         }
 
-        private Mock<IFileSystem> GetMockFileSystem()
+        private IFileSystem GetMockFileSystem()
         {
             var fileSystem = new Mock<IFileSystem>();
             fileSystem.Setup(f => f.Directory.Exists(ExistingDirPath)).Returns(true);
             fileSystem.Setup(f => f.Directory.Exists(NonExistingDirPath)).Returns(false);
-            fileSystem.Setup(f => f.Directory.EnumerateDirectories(ExistingDirPath)).Returns(directories);
-            fileSystem.Setup(f => f.Directory.EnumerateFiles(ExistingDirPath)).Returns(files);
+            fileSystem.Setup(f => f.Directory.EnumerateDirectories(ExistingDirPath)).Returns(this.directories);
+            fileSystem.Setup(f => f.Directory.EnumerateFiles(ExistingDirPath)).Returns(this.files);
 
-            return fileSystem;
+            return fileSystem.Object;
         }
     }
 }

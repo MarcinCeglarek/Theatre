@@ -12,6 +12,7 @@
     using Akka.Event;
 
     using Theatre.Common.Agents.Models;
+    using Theatre.Common.Helpers;
     using Theatre.Common.Messages;
 
     #endregion
@@ -49,7 +50,7 @@
         private void ProcessDirectory(HashDirectory message)
         {
             this.FullPath = message.FullPath;
-            this.Logger.Error("Rrecieved HashDirectory message for " + this.FullPath);
+            this.Logger.Info("Received HashDirectory message for " + this.FullPath);
             if (this.FileSystem.Directory.Exists(this.FullPath))
             {
                 this.Logger.Debug("Reading " + this.FullPath);
@@ -59,7 +60,7 @@
                 {
                     this.Logger.Debug("Creating agent for " + directoryPath);
                     var props = Context.DI().Props<DirectoryReader>();
-                    var agent = Context.ActorOf(props);
+                    var agent = Context.ActorOf(props, directoryPath.ToActorFriendlyName());
                     agent.Tell(new HashDirectory(directoryPath));
 
                     var dirInfo = new DirectoryAgentInfo

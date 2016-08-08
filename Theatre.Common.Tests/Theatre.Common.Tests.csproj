@@ -130,6 +130,7 @@
     <Compile Include="Agents\DatabaserTests.cs" />
     <Compile Include="Agents\DirectoryReaderTests.cs" />
     <Compile Include="Agents\FileReaderTests.cs" />
+    <Compile Include="Helpers\ExtensionMethodsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

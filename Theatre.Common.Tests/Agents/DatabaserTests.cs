@@ -1,12 +1,11 @@
-﻿using Akka.TestKit.Xunit2;
-
-namespace Theatre.Common.Tests.Agents
+﻿namespace Theatre.Common.Tests.Agents
 {
     #region Usings
 
     using System;
 
     using Akka.Actor;
+    using Akka.TestKit.Xunit2;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,7 +17,7 @@ namespace Theatre.Common.Tests.Agents
     [TestClass]
     public class DatabaserTests : TestKit
     {
-        private IActorRef _target;
+        private IActorRef target;
 
         public DatabaserTests()
             : base(@"akka.loglevel = DEBUG")
@@ -28,11 +27,11 @@ namespace Theatre.Common.Tests.Agents
         [TestMethod]
         public void LogsFileHashedMessage()
         {
-            this._target = this.ActorOf(Props.Create(() => new Databaser()));
+            this.target = this.ActorOf(Props.Create(() => new Databaser()));
             this.EventFilter.Info("Path hashed")
                 .ExpectOne(
                     () =>
-                    this._target.Tell(new FileHashed("Path", 10, new byte[] { 0, 1, 2, 3 }, DateTime.Now, DateTime.Now)));
+                    this.target.Tell(new FileHashed("Path", 10, new byte[] { 0, 1, 2, 3 }, DateTime.Now, DateTime.Now)));
         }
     }
 }
