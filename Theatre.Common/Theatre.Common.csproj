@@ -96,11 +96,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Agents\Databaser.cs" />
-    <Compile Include="Agents\Models\DirectoryAgentInfo.cs" />
-    <Compile Include="Agents\DirectoryReader.cs" />
-    <Compile Include="Agents\FileReader.cs" />
-    <Compile Include="Agents\Models\FileAgentInfo.cs" />
+    <Compile Include="Actors\Databaser.cs" />
+    <Compile Include="Actors\DirectoryReader.cs" />
+    <Compile Include="Actors\FileReader.cs" />
+    <Compile Include="Actors\Models\DirectoryAgentInfo.cs" />
+    <Compile Include="Actors\Models\FileAgentInfo.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Messages\DirectoryHashed.cs" />
     <Compile Include="Messages\FileHashed.cs" />

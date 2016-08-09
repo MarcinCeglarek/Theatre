@@ -1,4 +1,4 @@
-﻿namespace Theatre.Common.Agents
+﻿namespace Theatre.Common.Actors
 {
     #region Usings
 

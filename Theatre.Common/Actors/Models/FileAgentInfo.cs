@@ -1,11 +1,10 @@
-﻿using Theatre.Common.Messages;
-
-namespace Theatre.Common.Agents.Models
+﻿namespace Theatre.Common.Actors.Models
 {
     #region Usings
 
     using Akka.Actor;
 
+    using Theatre.Common.Messages;
     using Theatre.Common.Messages.Enums;
 
     #endregion

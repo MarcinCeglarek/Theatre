@@ -1,4 +1,4 @@
-﻿namespace Theatre.Common.Agents
+﻿namespace Theatre.Common.Actors
 {
     #region Usings
 
@@ -13,7 +13,7 @@
     using Akka.DI.Core;
     using Akka.Event;
 
-    using Theatre.Common.Agents.Models;
+    using Theatre.Common.Actors.Models;
     using Theatre.Common.Helpers;
     using Theatre.Common.Messages;
     using Theatre.Common.Messages.Enums;
@@ -86,7 +86,7 @@
         {
             // Order of messages here matters - subclasses needs to be put at first, and first matching rule is served
             this.Receive<DirectoryHashed>(message => this.ProcessDirectoryHashed(message));
-            this.Receive<FileHashed>(message => this.FileHashedHandler(message));
+            this.Receive<FileHashed>(message => this.ProcessFileHashed(message));
             this.Receive<HashDirectory>(message => this.ProcessDirectory(message));
         }
 
@@ -134,7 +134,7 @@
             }
         }
 
-        private void FileHashedHandler(FileHashed message)
+        private void ProcessFileHashed(FileHashed message)
         {
             var entry = this.Files.SingleOrDefault(f => f.FullPath == message.Path);
             if (entry == null)
@@ -143,7 +143,7 @@
                 return;
             }
 
-            this.Logger.Warning("Reaceived FileHashed message for " + message.Path);
+            this.Logger.Debug("Reaceived FileHashed message for " + message.Path);
             entry.Message = message;
 
             this.CheckCurrentDirectoryFinishingCondition();
@@ -158,7 +158,7 @@
                 return;
             }
 
-            this.Logger.Warning("Received DirectoryHashed message for " + message.FullPath);
+            this.Logger.Debug("Received DirectoryHashed message for " + message.FullPath);
             entry.Message = message;
             entry.Status = HashingStatus.Completed;
 
@@ -169,7 +169,7 @@
         {
             if (this.Files.All(f => f.Size.HasValue) && this.Directories.All(d => d.Size.HasValue))
             {
-                this.Logger.Error("Finished hashing directory: " + this.FullPath);
+                this.Logger.Info("Finished hashing directory: " + this.FullPath);
                 var size = this.Files.Sum(f => f.Size.Value) + this.Directories.Sum(d => d.Size.Value);
                 Context.Parent.Tell(new DirectoryHashed(this.FullPath, size));
             }

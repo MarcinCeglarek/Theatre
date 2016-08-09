@@ -1,6 +1,4 @@
-﻿using Akka.TestKit.Xunit2;
-
-namespace Theatre.Common.Tests.Agents
+﻿namespace Theatre.Common.Tests.Actors
 {
     #region Usings
 
@@ -12,12 +10,13 @@ namespace Theatre.Common.Tests.Agents
 
     using Akka.Actor;
     using Akka.TestKit;
+    using Akka.TestKit.Xunit2;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using Moq;
 
-    using Theatre.Common.Agents;
+    using Theatre.Common.Actors;
     using Theatre.Common.Messages;
 
     using Xunit;

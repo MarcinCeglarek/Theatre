@@ -1,4 +1,4 @@
-﻿namespace Theatre.Common.Tests.Agents
+﻿namespace Theatre.Common.Tests.Actors
 {
     #region Usings
 
@@ -9,7 +9,7 @@
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using Theatre.Common.Agents;
+    using Theatre.Common.Actors;
     using Theatre.Common.Messages;
 
     #endregion

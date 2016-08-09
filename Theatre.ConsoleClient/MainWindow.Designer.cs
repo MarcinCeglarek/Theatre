@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("TestNode");
             this.TreeView = new System.Windows.Forms.TreeView();
             this.SuspendLayout();
             // 
@@ -36,10 +37,16 @@
             this.TreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.TreeView.FullRowSelect = true;
             this.TreeView.Location = new System.Drawing.Point(12, 12);
             this.TreeView.Name = "TreeView";
+            treeNode1.Name = "Node0";
+            treeNode1.Text = "TestNode";
+            this.TreeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode1});
             this.TreeView.Size = new System.Drawing.Size(573, 586);
             this.TreeView.TabIndex = 0;
+            this.TreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView_NodeMouseClick);
             // 
             // MainWindow
             // 

@@ -127,9 +127,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Agents\DatabaserTests.cs" />
-    <Compile Include="Agents\DirectoryReaderTests.cs" />
-    <Compile Include="Agents\FileReaderTests.cs" />
+    <Compile Include="Actors\DatabaserTests.cs" />
+    <Compile Include="Actors\DirectoryReaderTests.cs" />
+    <Compile Include="Actors\FileReaderTests.cs" />
     <Compile Include="Helpers\ExtensionMethodsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

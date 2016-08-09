@@ -1,4 +1,4 @@
-﻿namespace Theatre.Common.Tests.Agents
+﻿namespace Theatre.Common.Tests.Actors
 {
     #region Usings
 
@@ -8,7 +8,6 @@
     using Akka.Actor;
     using Akka.DI.AutoFac;
     using Akka.DI.Core;
-    using Akka.TestKit;
     using Akka.TestKit.Xunit2;
 
     using Autofac;
@@ -17,7 +16,7 @@
 
     using Moq;
 
-    using Theatre.Common.Agents;
+    using Theatre.Common.Actors;
     using Theatre.Common.Messages;
 
     using Xunit;
