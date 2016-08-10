@@ -22,7 +22,7 @@
         {
             this.logging = Context.GetLogger();
             this.fileSystem = fileSystem;
-            this.Receive<HashFile>(message => this.ProcessFile(message.FullPath));
+            this.Receive<ProcessFile>(message => this.ProcessFile(message.FullPath));
         }
 
         private void ProcessFile(string fullPath)
@@ -40,7 +40,7 @@
                     var hash = md5Hash.ComputeHash(byteArray);
                     this.logging.Info("Finishing {0}", fullPath);
                     Context.Parent.Tell(
-                        new FileHashed(
+                        new FileProcessed(
                             fullPath, 
                             fileSize, 
                             hash, 

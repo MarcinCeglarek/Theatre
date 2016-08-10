@@ -31,7 +31,7 @@
             this.EventFilter.Info("Path hashed")
                 .ExpectOne(
                     () =>
-                    this.target.Tell(new FileHashed("Path", 10, new byte[] { 0, 1, 2, 3 }, DateTime.Now, DateTime.Now)));
+                    this.target.Tell(new FileProcessed("Path", 10, new byte[] { 0, 1, 2, 3 }, DateTime.Now, DateTime.Now)));
         }
     }
 }

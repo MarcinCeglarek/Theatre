@@ -19,13 +19,13 @@
         {
             this.logger = Context.GetLogger();
 
-            this.ReceiveAsync<FileHashed>(this.ProcessFileHashedMessage);
+            this.ReceiveAsync<FileProcessed>(this.ProcessFileHashedMessage);
         }
 
-        private Task ProcessFileHashedMessage(FileHashed message)
+        private Task ProcessFileHashedMessage(FileProcessed message)
         {
-            this.logger.Info($"{message.Path} hashed");
-            this.logger.Info($"{message.Path} size: {message.Size}");
+            this.logger.Info($"{message.FullPath} hashed");
+            this.logger.Info($"{message.FullPath} size: {message.Size}");
             return Task.FromResult(0);
         }
     }

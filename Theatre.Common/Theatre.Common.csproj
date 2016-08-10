@@ -102,10 +102,14 @@
     <Compile Include="Actors\Models\DirectoryAgentInfo.cs" />
     <Compile Include="Actors\Models\FileAgentInfo.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
-    <Compile Include="Messages\DirectoryHashed.cs" />
-    <Compile Include="Messages\FileHashed.cs" />
-    <Compile Include="Messages\HashDirectory.cs" />
-    <Compile Include="Messages\HashFile.cs" />
+    <Compile Include="Messages\BaseClasses\BaseFile.cs" />
+    <Compile Include="Messages\DetailRequest.cs" />
+    <Compile Include="Messages\DetailResponse.cs" />
+    <Compile Include="Messages\DirectoryProcessed.cs" />
+    <Compile Include="Messages\Enums\FileType.cs" />
+    <Compile Include="Messages\FileProcessed.cs" />
+    <Compile Include="Messages\ProcessDirectory.cs" />
+    <Compile Include="Messages\ProcessFile.cs" />
     <Compile Include="Messages\Enums\HashingStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

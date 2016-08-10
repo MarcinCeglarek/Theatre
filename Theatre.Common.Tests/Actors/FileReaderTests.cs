@@ -50,33 +50,33 @@
         [Fact]
         public void ChecksCreationDatesOnSentMessage()
         {
-            this.Target.Tell(new HashFile(ExistingFilePath));
-            var message = this.ExpectMsg<FileHashed>();
+            this.Target.Tell(new ProcessFile(ExistingFilePath));
+            var message = this.ExpectMsg<FileProcessed>();
             Assert.AreEqual(message.CreatedDate, this.createdDate);
         }
 
         [Fact]
         public void ChecksHashOnSentMessage()
         {
-            this.Target.Tell(new HashFile(ExistingFilePath));
+            this.Target.Tell(new ProcessFile(ExistingFilePath));
             var hash = MD5.Create().ComputeHash(this.existingFileContent);
-            var message = this.ExpectMsg<FileHashed>();
+            var message = this.ExpectMsg<FileProcessed>();
             Assert.IsTrue(hash.SequenceEqual(message.Hash));
         }
 
         [Fact]
         public void ChecksLastWriteDatesOnSentMessage()
         {
-            this.Target.Tell(new HashFile(ExistingFilePath));
-            var message = this.ExpectMsg<FileHashed>();
+            this.Target.Tell(new ProcessFile(ExistingFilePath));
+            var message = this.ExpectMsg<FileProcessed>();
             Assert.AreEqual(message.LastWriteDate, this.writeDate);
         }
 
         [Fact]
         public void ChecksSizeOnSentMessage()
         {
-            this.Target.Tell(new HashFile(ExistingFilePath));
-            var message = this.ExpectMsg<FileHashed>();
+            this.Target.Tell(new ProcessFile(ExistingFilePath));
+            var message = this.ExpectMsg<FileProcessed>();
             Assert.AreEqual(message.Size, this.existingFileContent.Length);
         }
 
@@ -84,36 +84,36 @@
         public void LogsInfoWhenFinishedHashingFile()
         {
             this.EventFilter.Info($"Finishing {ExistingFilePath}")
-                .ExpectOne(() => this.Target.Tell(new HashFile(ExistingFilePath)));
+                .ExpectOne(() => this.Target.Tell(new ProcessFile(ExistingFilePath)));
         }
 
         [Fact]
         public void LogsInfoWhenReceivedFile()
         {
             this.EventFilter.Info($"Processing {NotExistingFilePath}")
-                .ExpectOne(() => this.Target.Tell(new HashFile(NotExistingFilePath)));
+                .ExpectOne(() => this.Target.Tell(new ProcessFile(NotExistingFilePath)));
         }
 
         [Fact]
         public void LogsInfoWhenStartingToReadFile()
         {
             this.EventFilter.Debug($"Reading {ExistingFilePath}")
-                .ExpectOne(() => this.Target.Tell(new HashFile(ExistingFilePath)));
+                .ExpectOne(() => this.Target.Tell(new ProcessFile(ExistingFilePath)));
         }
 
         [Fact]
         public void LogsWarningWhenFileNotFound()
         {
             this.EventFilter.Warning($"{NotExistingFilePath}: File not found")
-                .ExpectOne(() => this.Target.Tell(new HashFile(NotExistingFilePath)));
+                .ExpectOne(() => this.Target.Tell(new ProcessFile(NotExistingFilePath)));
         }
 
         [Fact]
         public void SendsMessageWithValidFileNameWhenFinishedHashingFile()
         {
-            this.Target.Tell(new HashFile(ExistingFilePath));
-            var message = this.ExpectMsg<FileHashed>();
-            Assert.AreEqual(message.Path, ExistingFilePath);
+            this.Target.Tell(new ProcessFile(ExistingFilePath));
+            var message = this.ExpectMsg<FileProcessed>();
+            Assert.AreEqual(message.FullPath, ExistingFilePath);
         }
 
         private Mock<IFileSystem> CreateMockFileSystem()

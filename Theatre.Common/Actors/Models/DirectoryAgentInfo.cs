@@ -13,10 +13,8 @@ namespace Theatre.Common.Actors.Models
     {
         public string Name => Path.GetDirectoryName(this.FullPath);
 
-        public new DirectoryHashed Message { get; set; }
+        public new DirectoryProcessed Message { get; set; }
 
         public new long? Size => this.Message?.Size;
-
-        public HashingStatus Status { get; set; }
     }
 }

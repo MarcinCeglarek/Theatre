@@ -1,4 +1,4 @@
-﻿namespace Theatre.ConsoleClient.Actor
+﻿namespace Theatre.Client.Actor
 {
     #region
 
@@ -6,6 +6,7 @@
 
     using Akka.Actor;
 
+    using Theatre.Client;
     using Theatre.Common.Helpers;
 
     #endregion
@@ -45,7 +46,7 @@
             this.MainWindow = message.MainWindow;
             this.RootPath = message.RootPath;
 
-            this.MainWindow.CreateRootNode(this.RootPath);
+            /*this.MainWindow.CreateRootNode(this.RootPath);*/
             this.Become(this.Working);
         }
 
@@ -85,6 +86,7 @@
         }
 
         public MainWindow MainWindow { get; }
+
         public string RootPath { get; }
     }
 

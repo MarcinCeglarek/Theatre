@@ -56,7 +56,7 @@
                             var entry = this.Directories.SingleOrDefault(d => d.FullPath == path);
                             if (entry != null)
                             {
-                                entry.Message = new DirectoryHashed(path, 0);
+                                entry.Message = new DirectoryProcessed(path, 0);
                                 entry.Status = HashingStatus.PermissionDenied;
                             }
                         }
@@ -69,7 +69,7 @@
                             var entry = this.Files.SingleOrDefault(d => d.FullPath == path);
                             if (entry != null)
                             {
-                                entry.Message = new FileHashed(path, 0, new byte[16], null, null);
+                                entry.Message = new FileProcessed(path, 0, new byte[16], null, null);
                                 entry.Status = HashingStatus.PermissionDenied;
                             }
                         }
@@ -85,15 +85,15 @@
         private void ProcessingDirectory()
         {
             // Order of messages here matters - subclasses needs to be put at first, and first matching rule is served
-            this.Receive<DirectoryHashed>(message => this.ProcessDirectoryHashed(message));
-            this.Receive<FileHashed>(message => this.ProcessFileHashed(message));
-            this.Receive<HashDirectory>(message => this.ProcessDirectory(message));
+            this.Receive<DirectoryProcessed>(message => this.ProcessDirectoryHashed(message));
+            this.Receive<FileProcessed>(message => this.ProcessFileHashed(message));
+            this.Receive<ProcessDirectory>(message => this.ProcessDirectory(message));
         }
 
-        private void ProcessDirectory(HashDirectory message)
+        private void ProcessDirectory(ProcessDirectory message)
         {
             this.FullPath = message.FullPath;
-            this.Logger.Info("Received HashDirectory message for " + this.FullPath);
+            this.Logger.Info("Received ProcessDirectory message for " + this.FullPath);
 
             if (this.FileSystem.Directory.Exists(this.FullPath))
             {
@@ -105,7 +105,7 @@
                     this.Logger.Debug("Creating agent for " + directoryPath);
                     var props = Context.DI().Props<DirectoryReader>();
                     var agent = Context.ActorOf(props, Path.GetFileName(directoryPath).ToActorFriendlyName());
-                    agent.Tell(new HashDirectory(directoryPath));
+                    agent.Tell(new ProcessDirectory(directoryPath));
 
                     var dirInfo = new DirectoryAgentInfo
                                       {
@@ -120,7 +120,7 @@
                 {
                     var props = Context.DI().Props<FileReader>();
                     var agent = Context.ActorOf(props);
-                    agent.Tell(new HashFile(file));
+                    agent.Tell(new ProcessFile(file));
 
                     var fileInfo = new FileAgentInfo { Agent = agent, FullPath = file };
 
@@ -134,31 +134,31 @@
             }
         }
 
-        private void ProcessFileHashed(FileHashed message)
+        private void ProcessFileHashed(FileProcessed message)
         {
-            var entry = this.Files.SingleOrDefault(f => f.FullPath == message.Path);
+            var entry = this.Files.SingleOrDefault(f => f.FullPath == message.FullPath);
             if (entry == null)
             {
-                this.Logger.Error("Received FileHashed message for missing entry " + message.Path);
+                this.Logger.Error("Received FileProcessed message for missing entry " + message.FullPath);
                 return;
             }
 
-            this.Logger.Debug("Reaceived FileHashed message for " + message.Path);
+            this.Logger.Debug("Reaceived FileProcessed message for " + message.FullPath);
             entry.Message = message;
 
             this.CheckCurrentDirectoryFinishingCondition();
         }
 
-        private void ProcessDirectoryHashed(DirectoryHashed message)
+        private void ProcessDirectoryHashed(DirectoryProcessed message)
         {
             var entry = this.Directories.SingleOrDefault(d => d.FullPath == message.FullPath);
             if (entry == null)
             {
-                this.Logger.Error("Received DirectoryHashed message for missing entry " + message.FullPath);
+                this.Logger.Error("Received DirectoryProcessed message for missing entry " + message.FullPath);
                 return;
             }
 
-            this.Logger.Debug("Received DirectoryHashed message for " + message.FullPath);
+            this.Logger.Debug("Received DirectoryProcessed message for " + message.FullPath);
             entry.Message = message;
             entry.Status = HashingStatus.Completed;
 
@@ -171,7 +171,7 @@
             {
                 this.Logger.Info("Finished hashing directory: " + this.FullPath);
                 var size = this.Files.Sum(f => f.Size.Value) + this.Directories.Sum(d => d.Size.Value);
-                Context.Parent.Tell(new DirectoryHashed(this.FullPath, size));
+                Context.Parent.Tell(new DirectoryProcessed(this.FullPath, size));
             }
         }
     }

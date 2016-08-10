@@ -17,7 +17,7 @@
 
         public long? Size => this.Message?.Size;
 
-        public FileHashed Message {get;set;}
+        public FileProcessed Message {get;set;}
 
         public HashingStatus Status { get; set; }
     }

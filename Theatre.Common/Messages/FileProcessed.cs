@@ -1,16 +1,18 @@
 ﻿namespace Theatre.Common.Messages
 {
-    #region Usings
+    #region
 
     using System;
 
+    using Theatre.Common.Messages.BaseClasses;
+
     #endregion
 
-    public class FileHashed
+    public class FileProcessed : BaseFile
     {
-        public FileHashed(string path, long size, byte[] hash, DateTime? createdDate, DateTime? modifiedDate)
+        public FileProcessed(string fullPath, long size, byte[] hash, DateTime? createdDate, DateTime? modifiedDate)
+            : base(fullPath)
         {
-            this.Path = path;
             this.Size = size;
             this.Hash = hash;
             this.CreatedDate = createdDate;
@@ -22,8 +24,6 @@
         public byte[] Hash { get; }
 
         public DateTime? LastWriteDate { get; }
-
-        public string Path { get; }
 
         public long Size { get; }
     }

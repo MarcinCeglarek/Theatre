@@ -51,7 +51,7 @@
         [Fact]
         public void StartsProcessingDirectory()
         {
-            this.EventFilter.Info("Received HashDirectory message for " + NonExistingDirPath)
+            this.EventFilter.Info("Received ProcessDirectory message for " + NonExistingDirPath)
                 .ExpectOne(() => this.GetTargetAgent(NonExistingDirPath));
         }
 
@@ -79,7 +79,7 @@
         [Fact]
         public void CreatesAgentForEachSubdirectory()
         {
-            this.EventFilter.Info(null, "Received HashDirectory message for ")
+            this.EventFilter.Info(null, "Received ProcessDirectory message for ")
                 .Expect(3, () => this.GetTargetAgent(ExistingDirPath));
         }
 
@@ -94,7 +94,7 @@
                 var propsResolver = new AutoFacDependencyResolver(container, this.Sys);
                 var props = this.Sys.DI().Props<DirectoryReader>();
                 var target = this.Sys.ActorOf(props);
-                target.Tell(new HashDirectory(path));
+                target.Tell(new ProcessDirectory(path));
                 return target;
             }
         }
